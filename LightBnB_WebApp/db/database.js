@@ -1,19 +1,21 @@
 const properties = require("./json/properties.json");
 const users = require("./json/users.json");
-const { Pool } = require('pg');
-
+const pg = require('pg');
+require("dotenv").config();
 
 //connect to the lightbnb database
+const config = {
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+};
 
-const pool = new Pool({
-  user: 'labber',
-  password: 'labber',
-  host: 'localhost',
-  database: 'lightbnb'
+const pool = new pg.Pool(config);
+pool.connect().then(() => {
+  console.log("Connected to database!!!");
 });
-
-
-// pool.query(`SELECT title FROM properties LIMIT 10;`).then(response => {console.log(response)})
 
 /// Users
 
@@ -174,7 +176,7 @@ const getAllProperties = (options, limit = 10) => {
    LIMIT $${queryParams.length};
    `;
 
-   console.log(queryString, queryParams);
+  //  console.log(queryString, queryParams);
 
   return pool
     .query(queryString, queryParams)
